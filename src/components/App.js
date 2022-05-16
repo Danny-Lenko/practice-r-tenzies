@@ -5,6 +5,15 @@ import { nanoid } from 'nanoid'
 function App() {
 
     const [dice, setDice] = React.useState(addNewDice())
+    const [tenzies, setTenzies] = React.useState(false)
+
+    React.useEffect(() => {
+
+        const allEqual = dice.every((die,i,arr) => die.value === arr[0].value)
+        const allHeld = dice.every(die => die.isHeld)
+        if (allEqual && allHeld) setTenzies(true)
+
+    }, [dice])
 
     function createDie() {
         return {
@@ -23,11 +32,21 @@ function App() {
     }
 
     function rollDice() {
-        setDice(prevState => prevState.map(die => (
-            !die.isHeld
-                ? createDie()
-                : die
-        )))
+
+        if (!tenzies) {
+
+            setDice(prevState => prevState.map(die => (
+                !die.isHeld
+                    ? createDie()
+                    : die
+            )))
+
+        } else {
+
+            setTenzies(false)
+            setDice(addNewDice())
+
+        }
     }
 
     function holdDie(id) {
@@ -39,7 +58,7 @@ function App() {
     }
 
     const allDice = dice.map(die => (
-        <Die
+        <Die key={die.id}
             id={die.id}
             value={die.value}
             holdDie={() => holdDie(die.id)}
@@ -64,7 +83,7 @@ function App() {
                 className="roll-dice"
                 onClick={rollDice}
             >
-                Roll
+                {tenzies ? "New Game" : "Roll"}
             </button>
 
         </main>
