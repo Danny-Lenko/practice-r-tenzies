@@ -22,8 +22,29 @@ function App() {
         return diceArr
     }
 
+    function rollDice() {
+        setDice(prevState => prevState.map(die => (
+            !die.isHeld
+                ? createDie()
+                : die
+        )))
+    }
+
+    function holdDie(id) {
+        setDice(prevState => prevState.map(die => (
+            die.id === id
+                ? {...die, isHeld: !die.isHeld}
+                : die
+        )))
+    }
+
     const allDice = dice.map(die => (
-        <Die id={die.id} value={die.value} />
+        <Die
+            id={die.id}
+            value={die.value}
+            holdDie={() => holdDie(die.id)}
+            isHeld={die.isHeld}
+        />
     ))
 
 
@@ -38,6 +59,13 @@ function App() {
                 {allDice}
 
             </div>
+
+            <button
+                className="roll-dice"
+                onClick={rollDice}
+            >
+                Roll
+            </button>
 
         </main>
 
